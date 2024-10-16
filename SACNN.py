@@ -36,7 +36,7 @@ class SACNN_net(nn.Module):
     def SpatialModule(self):    #feature generalization module
         net=nn.Sequential(
                 nn.Conv2d(25, 25, (1, 4), padding=0),
-                nn.Conv2d(25, 25, (32, 1), padding = 0, bias= False),
+                nn.Conv2d(25, 25, (29, 1), padding = 0, bias= False),
                 nn.BatchNorm2d(25),
                 nn.ELU(),
                 nn.MaxPool2d((1,3), stride = (1,3)),
@@ -44,7 +44,7 @@ class SACNN_net(nn.Module):
         return net
     def SAModule(self, Q, K, V,x,mode=1):
         d_k = K.size(-1)
-        scores = torch.matmul(Q, K.transpose(-1, -2)) / math.sqrt(d_k)  ##### 1，2--》0,1
+        scores = torch.matmul(Q, K.transpose(-1, -2)) / math.sqrt(d_k)
         alpha_n = F.softmax(scores, dim=-1)
         weiht=torch.unsqueeze(torch.sum(alpha_n.mean(dim=0),-2),-1)
         weiht=1+weiht/torch.max(weiht)
@@ -111,5 +111,5 @@ class SACNN_net(nn.Module):
 if __name__=='__main__':
     from torchsummary.torchsummary import summary
     net=SACNN_net().to('cuda:0')
-    print(summary(net,(32,1000,1),device='cuda'))
+    print(summary(net,(29,1000,1),device='cuda'))
     print(net)
